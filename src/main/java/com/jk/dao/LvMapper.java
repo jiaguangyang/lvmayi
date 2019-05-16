@@ -30,7 +30,7 @@ public interface LvMapper {
     Integer getBtTotal();
 
     //jgy查询标题表
-    @Select("select *  from t_biaoti LIMIT #{start},#{pageSize}")
+    @Select("SELECT *  FROM T_BIAOTI ORDER BY BLACKTIME DESC LIMIT #{start},#{pageSize}")
     List<LinkedHashMap<String, Object>> getBtList(@Param("start") Integer start, @Param("pageSize") Integer pageSize);
 
     //新增标题

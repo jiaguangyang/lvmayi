@@ -51,9 +51,10 @@
             columns:[
                 {field:'id',title:"Id",width:100},
                 {field:'phone',title:'手机号码',width:100},      //  列    field   代表是 后台  传过来的值
+                {field:'blacktime',title:'时间',width:100},
                 {field:'xx',title:'操作',width:100,formatter:function(value,row,index){
 
-                        return "<a href=javascript:deleteblack('"+row.id+"')  class=\"layui-btn\">删除</a>";
+                        return "<a href=javascript:deleteblack('"+row.id+"')  class='btn btn-primary btn-lg active' role='button'>删除</a>";
 
                     }},
             ],
