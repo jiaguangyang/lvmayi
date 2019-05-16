@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"  xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>展示</title>
@@ -22,7 +22,7 @@
             <a class="navbar-brand" href="#">商品管理系统</a>
         </div>
         <div class="navbar-right">
-            <font color="white" size="4px">欢迎您! <a class="navbar-brand" th:text="${session.user.userName}" href="/toAccountInfo">
+            <font color="white" size="4px">欢迎您! <a class="navbar-brand"  href="/toAccountInfo">
             </a></font>
             <button type="button" class="btn btn-danger glyphicon glyphicon-off" onclick="zhuXiao()">注销</button>
         </div>
@@ -82,5 +82,6 @@
             }
         })
     }
+  /*  th:text="${session.user.userName}"*/
 </script>
 </html>
