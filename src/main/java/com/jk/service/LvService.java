@@ -1,5 +1,6 @@
 package com.jk.service;
 
+import com.jk.model.BiaoTi;
 import com.jk.utils.MenuTree;
 
 import java.util.HashMap;
@@ -8,10 +9,25 @@ import java.util.List;
 
 public interface LvService {
 
+    //查询树 wzk
+    String getTreeAll();
 
-    String getTreeAll();//查询树 wzk
+    //查询 黑名单 wzk
+    HashMap<String, Object>  getblacklist(Integer pageSize, Integer start);
 
-    HashMap<String, Object> getblacklist(Integer pageSize, Integer start); //查询 黑名单 wzk
 
-    void deleteblack(String id);//删除 黑名单
+    //jgy查询标题表
+    HashMap<String, Object> finBiaoti(Integer pageSize, Integer start);
+
+    //jgy新增或修改标题
+    void addBiaoti(BiaoTi bt);
+
+    //jgy删除标题
+    void deleteBiaoti(String btid);
+
+    //根据IDcha查询标题
+    BiaoTi findBtById(String btid);
+
+    //删除黑名单
+    void deleteblack(String id);
 }

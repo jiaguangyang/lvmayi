@@ -52,7 +52,9 @@
                 {field:'id',title:"Id",width:100},
                 {field:'phone',title:'手机号码',width:100},      //  列    field   代表是 后台  传过来的值
                 {field:'xx',title:'操作',width:100,formatter:function(value,row,index){
-                        return "<a href=javascript:deleteblack('"+row.id+"')>删除</a>";
+
+                        return "<a href=javascript:deleteblack('"+row.id+"')  class=\"layui-btn\">删除</a>";
+
                     }},
             ],
             //传递参数（*）
@@ -87,23 +89,25 @@
      * 黑名单的 删除
      * @param id
      */
-
-
+    //loading层
     function deleteblack(id) {
-        $.ajax({
-        url:"/deleteblack",
-        type:"post",
-        data:{id:id},
-            beforeSend: function(){     //ajax 发送之前
-                layer.load(1);
-            },
-        success:function (data) {
-            layer.msg('删除成功');
-            $("#blackTable").bootstrapTable('refresh');
-        },error:function () {
-            alert("删除失败");
-        }
-    })
+        layer.confirm('您确定要删除这条数据吗?', {icon: 3, title:'提示'}, function(index){
+            //do something
+            $.ajax({
+                url:"/deleteblack",
+                type:"post",
+                data:{id:id},
+                success:function (data) {
+                    layer.msg('删除成功');
+                    $("#blackTable").bootstrapTable('refresh');
+                },error:function () {
+                    alert("删除失败");
+                }
+            })
+            layer.close(index);
+        });
+
+
     }
 
 </script>

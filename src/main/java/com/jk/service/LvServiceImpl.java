@@ -2,6 +2,7 @@ package com.jk.service;
 
 import com.alibaba.fastjson.JSON;
 import com.jk.dao.LvMapper;
+import com.jk.model.BiaoTi;
 import com.jk.utils.MenuTree;
 import com.jk.utils.TreeNoteUtil;
 import org.apache.commons.lang.StringUtils;
@@ -47,8 +48,8 @@ public class LvServiceImpl implements LvService{
      */
     @Override
     public HashMap<String, Object> getblacklist(Integer pageSize,Integer start) {
-       long count=lvMapper.getsum();
-       List<LinkedHashMap<String,Object>> find=lvMapper.getblacklist(pageSize,start);
+       long count=lvMapper.getgetblacklistsum();
+       List<LinkedHashMap<String,Object>> find=lvMapper.getblacklist(start,pageSize);
         HashMap<String,Object> map =new HashMap<>();
         map.put("total", count);
         map.put("rows", find);
@@ -62,5 +63,42 @@ public class LvServiceImpl implements LvService{
     @Override
     public void deleteblack(String id) {
         lvMapper.deleteblack(id);
+    }
+
+    //jgy查询标题表
+    @Override
+    public HashMap<String, Object> finBiaoti(Integer pageSize, Integer start) {
+       Integer total= lvMapper.getBtTotal();
+      List<LinkedHashMap<String,Object>> list= lvMapper.getBtList(start,pageSize);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("total",total);
+        hashMap.put("rows",list);
+        return hashMap;
+    }
+
+    //jgy新增或修改标题
+    @Override
+    public void addBiaoti(BiaoTi bt) {
+        if (StringUtils.isNotEmpty(bt.getId().toString())){
+            //修改标题
+            lvMapper.updateBiaoti(bt);
+        }else{
+            //新增标题
+            lvMapper.addBiaoti(bt);
+        }
+
+    }
+
+    //jgy删除标题
+    @Override
+    public void deleteBiaoti(String btid) {
+        lvMapper.deleteBiaoti(btid);
+    }
+
+    //根据ID查询标题
+    @Override
+    public BiaoTi findBtById(String btid) {
+        BiaoTi bt= lvMapper.findBtById(btid);
+        return bt;
     }
 }

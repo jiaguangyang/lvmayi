@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>标题管理</title>
@@ -17,18 +17,90 @@
     <link rel="stylesheet" href="/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
     <script type="text/javascript" src="/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
     <script type="text/javascript" src="/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+
+    <!--  引入layer-->
+    <script src="/js/layer/layer.js"></script>
 </head>
 <body>
+<input type="button" class="btn btn-success" value="新增标题" onclick="addBiaoti()">
 <table id="biaotiTable"></table>
 </body>
 <script>
+
+    function updateBiaoti(btid) {
+        dialog("/toaddBiaoti?btid="+btid,"/updateBiaoti","修改标题");
+    }
+
+    function  addBiaoti(){
+        dialog("/toaddBiaoti","/addBiaoti","新增标题");
+    }
+    function getJspHtml(urlStr){
+        var  jspHtml = "";
+//	 async  (默认: true) 默认设置下，所有请求均为异步请求。如果需要发送同步请求，请将此选项设置为 false。
+//注意，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
+        $.ajax({
+            url:urlStr,
+            type:'post',
+            //同步的ajax
+            async:false,
+            success:function(data){
+                //alert(data);//data--addProduct.jsp页面内容
+                jspHtml = data;
+            },
+            error:function(){
+                bootbox.alert("失败");
+            }
+        });
+        return jspHtml;
+    }
+
+
+    function  dialog(HTMLurl,submitUrl,title){
+        alert(HTMLurl);
+        var dialog = bootbox.dialog({
+            title: title,
+            message: getJspHtml(HTMLurl),   //调用方法
+            buttons:{
+                "save":{
+                    label: '保存',
+                    //自定义样式
+                    className: "btn-success",
+                    callback: function() {
+                        var data= $("#logForm").serialize();
+                        layer.load();
+                        $.ajax({
+                            url:submitUrl,
+                            type:'post',
+                            data:data,
+                            success:function(data){
+                                layer.msg('保存成功');
+                                $("#biaotiTable").bootstrapTable('refresh');
+                            },
+                            error:function(){
+                                bootbox.alert("ajax失败");
+                            }
+                        });
+                    }
+                },
+                "unSave":{
+                    label: '取消',
+                    //自定义样式
+                    className: "btn-info",
+                    callback: function() {
+                        // return false;  //dialog不关闭
+                    }
+                }
+            }
+        });
+    }
+
     $(function() {
         initRoleJob();//初始化用户表格数据
 
     })
     function  initRoleJob() {
-        $("#bootTab").bootstrapTable({
-            url:"demo/findBo+otstrap.do",
+        $("#biaotiTable").bootstrapTable({
+            url:"finBiaoti",
             method:"post",
             striped: true,  	// 斑马线效果     默认false
             //只允许选中一行
@@ -48,9 +120,10 @@
             columns:[
                 {field:'id',title:"Id",width:100},
                 {field:'text',title:'标题',width:100},      //  列    field   代表是 后台  传过来的值
-
+                {field:'uri',title:'跳转路径',width:100},
                 {field:'xx',title:'操作',width:100,formatter:function(value,row,index){
-                        return "<a href=javascript:deletebook('"+row.bid+"')>删除</a>";
+                        return "<a href=javascript:deleteBiaoti('"+row.id+"')>删除</a> |" +
+                            " <a href=javascript:updateBiaoti('"+row.id+"')>修改</a>";
                     }},
             ],
             //传递参数（*）
@@ -75,10 +148,26 @@
             sidePagination:'server',
             pagination: true,                   //是否显示分页（*）
             pageNum: 1,                       //每页的记录行数（*）
-            pageSize: 3,                       //每页的记录行数（*）
-            pageList: [3, 6, 9,12],        //可供选择的每页的行数（*）
+            pageSize: 5,                       //每页的记录行数（*）
+            pageList: [5,10,12],        //可供选择的每页的行数（*）
         });
 
+    }
+
+
+
+    function deleteBiaoti(btid) {
+        $.ajax({
+            url:"/deleteBiaoti",
+            type:"post",
+            data:{"btid":btid},
+            success:function (data) {
+                bootbox.alert("删除成功");
+                $("#biaotiTable").bootstrapTable('refresh');
+            },error:function () {
+
+            }
+        });
     }
 </script>
 </html>
