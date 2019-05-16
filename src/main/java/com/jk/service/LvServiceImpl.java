@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -27,20 +28,39 @@ public class LvServiceImpl implements LvService{
      */
     @Override
     public String getTreeAll() {
-          List<MenuTree> list= lvMapper.getTreeAll();
-        List<MenuTree> treeList = TreeNoteUtil.getFatherNode(list);
         Jedis resource = jedisPool.getResource();
-        String jsonString = JSON.toJSONString(treeList);
-        resource.set("tree",jsonString);
-        return jsonString;
-    }
+        if(StringUtils.isNotEmpty(resource.get("tree"))){
+            String tree = resource.get("tree");
+            return tree;
+        }else{
+            List<MenuTree> list= lvMapper.getTreeAll();
+            List<MenuTree> tree = TreeNoteUtil.getFatherNode(list);
+            String jsonString = JSON.toJSONString(tree);
+            resource.set("tree", jsonString);
+            return jsonString;
+        }
 
+    }
     /**
-     * 查询 黑名单
+     * 查询 黑名单 wzk
      * @return
      */
     @Override
-    public List<LinkedHashMap<String, Object>> getblacklist() {
-        return lvMapper.getblacklist();
+    public HashMap<String, Object> getblacklist(Integer pageSize,Integer start) {
+       long count=lvMapper.getsum();
+       List<LinkedHashMap<String,Object>> find=lvMapper.getblacklist(pageSize,start);
+        HashMap<String,Object> map =new HashMap<>();
+        map.put("total", count);
+        map.put("rows", find);
+        return map;
+
+    }
+    /**
+     * 删除 黑名单 wzk
+     * @param id
+     */
+    @Override
+    public void deleteblack(String id) {
+        lvMapper.deleteblack(id);
     }
 }

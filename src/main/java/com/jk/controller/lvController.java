@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +24,7 @@ public class lvController {
      * 同步树  王战坤
      * @return
      */
-    @RequestMapping("getTree")
+    @RequestMapping("findTree")
     @ResponseBody
     public String getTreeAll(){
 
@@ -36,8 +37,21 @@ public class lvController {
      */
     @RequestMapping("getblacklist")
     @ResponseBody
-    public List<LinkedHashMap<String,Object>> getblacklist(){
-        return  lvService.getblacklist();
+    public HashMap<String, Object> getblacklist(Integer pageSize, Integer start){
+
+        return  lvService.getblacklist(pageSize,start);
+    }
+
+    /**
+     * 删除  黑名单  wzk
+     * @param
+     * @return
+     */
+    @RequestMapping("deleteblack")
+    @ResponseBody
+    public  String  deleteblack(String id){
+        lvService.deleteblack(id);
+        return null;
     }
 
     @RequestMapping("find")
