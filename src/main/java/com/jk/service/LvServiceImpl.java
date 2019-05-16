@@ -79,7 +79,7 @@ public class LvServiceImpl implements LvService{
     //jgy新增或修改标题
     @Override
     public void addBiaoti(BiaoTi bt) {
-        if (StringUtils.isNotEmpty(bt.getId().toString())){
+        if (bt.getId()!=null){
             //修改标题
             lvMapper.updateBiaoti(bt);
         }else{
@@ -101,4 +101,6 @@ public class LvServiceImpl implements LvService{
         BiaoTi bt= lvMapper.findBtById(btid);
         return bt;
     }
+
+
 }

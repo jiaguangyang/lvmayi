@@ -7,5 +7,16 @@
     <insert id="addBiaoti">
         insert into t_biaoti(text,uri) values(#{text},#{uri})
     </insert>
-    <update id="updateBiaoti"></update>
+    <update id="updateBiaoti">
+        update t_biaoti <set>
+        <if test="text!='' and text!=null">
+            text=#{text},
+        </if>
+        <if test="uri!='' and uri!=null">
+            uri=#{uri}
+        </if>
+
+    </set>
+        where id=#{id}
+    </update>
 </mapper>

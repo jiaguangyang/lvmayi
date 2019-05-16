@@ -28,11 +28,11 @@
 <script>
 
     function updateBiaoti(btid) {
-        dialog("/toaddBiaoti?btid="+btid,"/updateBiaoti","修改标题");
+        dialog("/toaddBiaoti?btid="+btid,"/addOrUpBiaoti","修改标题");
     }
 
     function  addBiaoti(){
-        dialog("/toaddBiaoti","/addBiaoti","新增标题");
+        dialog("/toaddBiaoti","/addOrUpBiaoti","新增标题");
     }
     function getJspHtml(urlStr){
         var  jspHtml = "";
@@ -56,7 +56,6 @@
 
 
     function  dialog(HTMLurl,submitUrl,title){
-        alert(HTMLurl);
         var dialog = bootbox.dialog({
             title: title,
             message: getJspHtml(HTMLurl),   //调用方法
@@ -73,6 +72,9 @@
                             type:'post',
                             data:data,
                             success:function(data){
+                                setTimeout(function(){
+                                    layer.closeAll('loading');
+                                }, 500);
                                 layer.msg('保存成功');
                                 $("#biaotiTable").bootstrapTable('refresh');
                             },
@@ -162,7 +164,7 @@
             type:"post",
             data:{"btid":btid},
             success:function (data) {
-                bootbox.alert("删除成功");
+                layer.msg('删除成功');
                 $("#biaotiTable").bootstrapTable('refresh');
             },error:function () {
 
