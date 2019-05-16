@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<form id="logForm">
+    <div name="adds">
+        <input type="hidden"   name="id"  th:value="${id}">
+        <div class="form-group">
+            <label for="proName">标题名称</label>
+            <input type="text" class="form-control" th:value="${text}"  name="text"  id="proName" placeholder="标题名称">
+        </div>
+        <div class="form-group">
+            <label >标题路径</label>
+            <input type="text" name="uri" th:value="${uri}"  class="form-control" placeholder="标题路径" />
+        </div>
+    </div>
+</form>
+</html>
+

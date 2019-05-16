@@ -4,5 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.jk.dao.LvMapper">
-
+    <insert id="addBiaoti">
+        insert into t_biaoti(text,uri) values(#{text},#{uri})
+    </insert>
+    <update id="updateBiaoti"></update>
 </mapper>
