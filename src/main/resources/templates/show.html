@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>展示</title>
+    <!-- 引入jequery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 引入bootstrap的css、js文件 -->
+    <link rel="stylesheet" href="/bootstrap3/css/bootstrap.css">
+    <script type="text/javascript" src="/bootstrap3/js/bootstrap.js"></script>
+    <!-- 引入tree的css、js文件 -->
+    <link rel="stylesheet" href="/js/bootstrap-treeview/bootstrap-treeview.min.css">
+    <script type="text/javascript" src="/js/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+    <!-- 引入选项卡tabs的css、js文件 -->
+    <link rel="stylesheet" href="/js/bootStrap-addTabs/bootstrap.addtabs.css">
+    <script type="text/javascript" src="/js/bootStrap-addTabs/bootstrap.addtabs.min.js"></script>
+</head>
+<body class="easyui-layout">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">商品管理系统</a>
+        </div>
+        <div class="navbar-right">
+            <font color="white" size="4px">欢迎您! <a class="navbar-brand" th:text="${session.user.userName}" href="/toAccountInfo">
+            </a></font>
+            <button type="button" class="btn btn-danger glyphicon glyphicon-off" onclick="zhuXiao()">注销</button>
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <!-- 树的div -->
+            <div id="myTree"></div>
+        </div>
+        <div class="col-md-10">
+            <div id="myTabs">
+                <!-- 新选项卡 -->
+                <ul class="nav nav-tabs" id="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#home" role="tab" data-toggle="tab">欢迎</a>
+                    </li>
+                </ul>
+
+                <!-- 选项卡下内容 -->
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="home">
+                        首页
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    function zhuXiao(){
+        location.href="/logout";
+    }
+
+    $(function(){
+        initTree();//初始化树的数据
+    })
+    //初始化树的数据
+    function initTree(){
+        $.ajax({
+            url:"/findTree",
+            type:"post",
+            success:function(data){
+                $('#myTree').treeview({
+                    data:data,
+                    onNodeSelected:function(event, node) {
+                        $.addtabs({iframeHeight: $(window).height()-120});
+                        $.addtabs.add({
+                            id:node.id,
+                            title:node.text,
+                            url:"/"+node.href
+                        });
+                    }
+                })
+            }
+        })
+    }
+</script>
+</html>

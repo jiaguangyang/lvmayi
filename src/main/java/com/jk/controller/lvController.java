@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 public class lvController {
@@ -37,5 +38,10 @@ public class lvController {
     @ResponseBody
     public List<LinkedHashMap<String,Object>> getblacklist(){
         return  lvService.getblacklist();
+    }
+
+    @RequestMapping("find")
+    public String  find(String url){
+        return url;
     }
 }
