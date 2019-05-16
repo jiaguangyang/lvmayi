@@ -37,7 +37,7 @@ public class LvServiceImpl implements LvService{
             List<MenuTree> list= lvMapper.getTreeAll();
             List<MenuTree> tree = TreeNoteUtil.getFatherNode(list);
             String jsonString = JSON.toJSONString(tree);
-            resource.set("tree", jsonString);
+            resource.setex("tree", 20,jsonString);
             return jsonString;
         }
 
