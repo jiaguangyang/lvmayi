@@ -51,6 +51,7 @@ public class LvServiceImpl implements LvService{
         return lvMapper.getblacklist();
     }
 
+    //jgy查询标题表
     @Override
     public HashMap<String, Object> finBiaoti(Integer pageSize, Integer start) {
        Integer total= lvMapper.getBtTotal();
@@ -61,21 +62,26 @@ public class LvServiceImpl implements LvService{
         return hashMap;
     }
 
+    //jgy新增或修改标题
     @Override
     public void addBiaoti(BiaoTi bt) {
         if (StringUtils.isNotEmpty(bt.getId().toString())){
+            //修改标题
             lvMapper.updateBiaoti(bt);
         }else{
+            //新增标题
             lvMapper.addBiaoti(bt);
         }
 
     }
 
+    //jgy删除标题
     @Override
     public void deleteBiaoti(String btid) {
         lvMapper.deleteBiaoti(btid);
     }
 
+    //根据ID查询标题
     @Override
     public BiaoTi findBtById(String btid) {
         BiaoTi bt= lvMapper.findBtById(btid);

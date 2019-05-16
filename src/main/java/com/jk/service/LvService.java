@@ -14,11 +14,15 @@ public interface LvService {
 
     List<LinkedHashMap<String, Object>> getblacklist(); //查询 黑名单 wzk
 
+    //jgy查询标题表
     HashMap<String, Object> finBiaoti(Integer pageSize, Integer start);
 
+    //jgy新增或修改标题
     void addBiaoti(BiaoTi bt);
 
+    //jgy删除标题
     void deleteBiaoti(String btid);
 
+    //根据IDcha查询标题
     BiaoTi findBtById(String btid);
 }

@@ -21,6 +21,7 @@ public class lvController {
     @Autowired
     private LvService lvService;
 
+    //jgy删除标题
     @RequestMapping("deleteBiaoti")
     @ResponseBody
     public void deleteBiaoti(String btid){
@@ -28,10 +29,11 @@ public class lvController {
     }
 
 
-
+    //jgy新增或修改标题跳转页面
     @RequestMapping("toaddBiaoti")
     public String toaddBiaoti(String btid, Model model){
         if (StringUtils.isNotEmpty(btid)){
+            //根据IDcha查询标题
             BiaoTi bt= lvService.findBtById(btid);
             model.addAttribute("id",bt.getId());
             model.addAttribute("text",bt.getText());
@@ -40,12 +42,14 @@ public class lvController {
         return "addBiaoti";
     }
 
+    //jgy新增或修改标题
     @RequestMapping("addOrUpBiaoti")
     @ResponseBody
     public void addBiaoti(BiaoTi bt){
         lvService.addBiaoti(bt);
     }
 
+    //jgy查询标题表
     @RequestMapping("finBiaoti")
     @ResponseBody
     public HashMap<String,Object> finBiaoti(Integer pageSize, Integer start){

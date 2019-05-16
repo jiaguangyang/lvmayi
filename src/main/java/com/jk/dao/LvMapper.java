@@ -18,19 +18,24 @@ public interface LvMapper {
     @Select(" select * from t_blacklist ")
     List<LinkedHashMap<String, Object>> getblacklist();//查询 黑名单 wzk
 
+    //查询标题表总条数
     @Select("select count(*) from t_biaoti ")
     Integer getBtTotal();
 
+    //jgy查询标题表
     @Select("select *  from t_biaoti LIMIT #{start},#{pageSize}")
     List<LinkedHashMap<String, Object>> getBtList(@Param("start") Integer start, @Param("pageSize") Integer pageSize);
 
+    //新增标题
     void addBiaoti(BiaoTi bt);
 
+    //jgy删除标题
     @Delete("delete from t_biaoti where id in(${btid})")
     void deleteBiaoti(@Param("btid")String btid);
 
+    //根据ID查询标题
     @Select("select * from t_biaoti where id=#{btid}")
     BiaoTi findBtById(@Param("btid") String btid);
-
+    //修改标题
     void updateBiaoti(BiaoTi bt);
 }
