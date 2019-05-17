@@ -19,9 +19,19 @@
     </set>
         where id=#{id}
     </update>
-   <!-- 查询 承运商 分页 条查-->
-    <select id="getcommon" resultType="com.jk.model.common">
 
-    </select>
+    <update id="upHref">
+        update t_oss
+         <set>
+             <if test="href!=null and href!=''">
+                 href=#{href}
+             </if>
+    </set>
+    where id=#{id}
+    </update>
+
+    <insert id="addLunbo">
+        insert into t_oss(url,href,hrefname) values(#{url},#{href},#{hrefname})
+    </insert>
 
 </mapper>

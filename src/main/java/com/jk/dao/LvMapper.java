@@ -2,6 +2,8 @@ package com.jk.dao;
 
 import com.jk.model.BiaoTi;
 import com.jk.model.common;
+import com.jk.model.Ossbean;
+import com.jk.model.User;
 import com.jk.utils.MenuTree;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
@@ -51,6 +53,22 @@ public interface LvMapper {
     //删除黑名单 wzk
     @Delete(" DELETE FROM T_BLACKLIST WHERE ID=#{id} ")
     void deleteblack(@Param("id") String id);
+
+    //用户登录
+    @Select("select * from t_admin where username=#{username} and password=#{password}")
+    User findUser(User user);
+
+    //查询轮播图
+    @Select("select * from t_oss limit #{start},#{pageSize}")
+    List<Ossbean> findOssTable(@Param("start") Integer start,@Param("pageSize") Integer pageSize);
+
+    //删除轮播图
+    @Delete("delete from t_oss where id in(${btid})")
+    void deleteLunbo(String btid);
+
+    void upHref(Ossbean ossbean);
+
+    void addLunbo(Ossbean ossbean);
 
 
 }

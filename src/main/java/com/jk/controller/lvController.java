@@ -1,7 +1,10 @@
 package com.jk.controller;
 
 import com.jk.model.BiaoTi;
+import com.jk.model.Ossbean;
+import com.jk.model.User;
 import com.jk.service.LvService;
+import com.jk.utils.Constant;
 import com.jk.utils.MenuTree;
 import com.jk.utils.TreeNoteUtil;
 import org.apache.commons.lang.StringUtils;
@@ -16,6 +19,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 @Controller
 public class lvController {
     @Autowired
@@ -24,8 +31,8 @@ public class lvController {
     //jgy删除标题
     @RequestMapping("deleteBiaoti")
     @ResponseBody
-    public void deleteBiaoti(String btid){
-        lvService.deleteBiaoti(btid);
+    public void deleteBiaoti(String btid,Integer type){
+        lvService.deleteBiaoti(btid,type);
     }
 
 
@@ -40,6 +47,25 @@ public class lvController {
             model.addAttribute("uri",bt.getUri());
         }
         return "addBiaoti";
+    }
+
+    //修改或新增轮播图
+    @RequestMapping("addOrUpHref")
+    @ResponseBody
+    public void addOrUpHref(Ossbean ossbean){
+      if (ossbean.getId()!=null){
+          lvService.upHref(ossbean); //修改路径
+      }else{
+          lvService.addLunbo(ossbean);//新增轮播图
+      }
+    }
+
+    //跳转修改路径页面
+    @RequestMapping("toupdateHref")
+    public String  toupdateHref(String href,Integer id,Model model){
+        model.addAttribute("href",href);
+        model.addAttribute("id",id);
+        return "updateHref";
     }
 
     //jgy新增或修改标题
@@ -91,11 +117,45 @@ public class lvController {
         lvService.deleteblack(id);
         return null;
     }
-
+     //页面跳转用
     @RequestMapping("find")
     public String  find(String url){
         return url;
     }
 
+    //用户登录
+    @RequestMapping("login")
+    @ResponseBody
+    public HashMap<String,Object> login(HttpServletResponse response, User user, HttpSession session){
+       User user1= lvService.findUser(user);
+            HashMap<String, Object> hashMap = new HashMap<>();
+        if (user1!=null){
+           if (user.getRemPwd()!=null){
+               Cookie cookie = new Cookie(Constant.cookieNamePwd,user.getUsername()+Constant.splitstr+user.getPassword());
+               cookie.setMaxAge(604800);
+               response.addCookie(cookie);
 
+           }else{
+               Cookie cookie = new Cookie(Constant.cookieNamePwd,"");
+               cookie.setMaxAge(0);
+               response.addCookie(cookie);
+           }
+            hashMap.put("msg","登陆成功");
+            hashMap.put("success",true);
+       }else{
+            Cookie cookie = new Cookie(Constant.cookieNamePwd,"");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+            hashMap.put("msg","账号密码错误");
+            hashMap.put("success",false);
+        }
+        return hashMap;
+    }
+
+    //查询轮播图
+    @RequestMapping("findOssTable")
+    @ResponseBody
+    public HashMap<String,Object> findOssTable(Integer start,Integer pageSize){
+        return lvService.findOssTable(start,pageSize);
+    }
 }

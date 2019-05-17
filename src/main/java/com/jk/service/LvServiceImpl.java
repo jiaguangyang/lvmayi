@@ -3,6 +3,8 @@ package com.jk.service;
 import com.alibaba.fastjson.JSON;
 import com.jk.dao.LvMapper;
 import com.jk.model.BiaoTi;
+import com.jk.model.Ossbean;
+import com.jk.model.User;
 import com.jk.utils.MenuTree;
 import com.jk.utils.TreeNoteUtil;
 import org.apache.commons.lang.StringUtils;
@@ -65,6 +67,35 @@ public class LvServiceImpl implements LvService{
         lvMapper.deleteblack(id);
     }
 
+    //用户登录
+    @Override
+    public User findUser(User user) {
+        User user1=  lvMapper.findUser(user);
+        return user1;
+    }
+
+    //查询轮播图
+    @Override
+    public HashMap<String, Object> findOssTable(Integer start, Integer pageSize) {
+        List<Ossbean> list =lvMapper.findOssTable(start,pageSize);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("total", list.size());
+        map.put("rows", list);
+        return map;
+    }
+
+    //修改路径
+    @Override
+    public void upHref(Ossbean ossbean) {
+        lvMapper.upHref(ossbean);
+    }
+
+    //新增轮播图
+    @Override
+    public void addLunbo(Ossbean ossbean) {
+        lvMapper.addLunbo(ossbean);
+    }
+
     //jgy查询标题表
     @Override
     public HashMap<String, Object> finBiaoti(Integer pageSize, Integer start) {
@@ -91,8 +122,13 @@ public class LvServiceImpl implements LvService{
 
     //jgy删除标题
     @Override
-    public void deleteBiaoti(String btid) {
-        lvMapper.deleteBiaoti(btid);
+    public void deleteBiaoti(String btid,Integer type) {
+     if (type==1){
+         lvMapper.deleteBiaoti(btid);
+     }
+       if (type==2){
+           lvMapper.deleteLunbo(btid);
+       }
     }
 
     //根据ID查询标题

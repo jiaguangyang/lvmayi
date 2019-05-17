@@ -52,7 +52,7 @@
                     </div>
                     <!--账户密码登录-->
                     <div class="register-con" id="rc">
-                        <form action="/login"  method="post">
+                        <form id="userloginForm"  method="post">
                         <div class="aui-register-form-item">
                             <input type="text" name="username" maxlength="20"  placeholder="账户名" class="txt03 f-r3 required" tabindex="3" data-valid="isNonEmpty||between:3-20||isUname" data-error="<i class='icon-tips'></i>您还没有输入账户名||<i class='icon-tips'></i>用户名长度3-20位||<i class='icon-tips'></i>只能输入字母、数字、且以中文或字母开头" id="adminNo">
                             <label class="focus valid"></label>
@@ -62,14 +62,14 @@
                             <label class="focus valid"></label>
 
                         </div>
-                        <div style="margin-left: 80px;float: left">
-                        <input th:checked="${password}==null?'false':'checked'"   type="checkbox" name="remPwd" value="1">记住密码</input>
+                        <div style="margin-left: 80px;">
+                        <input    type="checkbox" name="remPwd" value="1">记住密码
                         </div>
                         <div class="aui-register-form-item" >
                             <p class="aui-for-pwd"><br>
                                 <a class="" href="#">忘记密码</a>
                             </p>
-                            <input id="aui-btn-reg" class="aui-btn-reg" type="submit"  readonly="readonly" value="登录" >
+                            <input id="aui-btn-reg" class="aui-btn-reg"   readonly="readonly" value="登录" >
                         </div>
                         </form>
                         <div class="aui-protocol">
@@ -148,18 +148,23 @@
 
 <script type="text/javascript" src="js/login.js"></script>
 <script type="text/javascript">
-    $(function() {
-        $("#aui-btn-reg").click(function() {
-            if (!verifyCheck._click()) return;
-            alert('恭喜你！登录成功')
+    $("#aui-btn-reg").click(function() {
+        $.ajax({
+            url:"/login",
+            type:"post",
+            data:$("#userloginForm").serialize(),
+            success:function (data) {
 
-        });
-        $("#aui-btn-reg1").click(function() {
-            if (!verifyCheck._click()) return;
-            alert('恭喜你！登录成功')
-
+            },error:function () {
+                
+            }
         });
     });
+
+    $(function() {
+
+    });
+    /*th:checked="${password}==null?'false':'checked'"*/
 </script>
 
 
