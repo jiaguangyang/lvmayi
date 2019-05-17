@@ -1,6 +1,7 @@
 package com.jk.dao;
 
 import com.jk.model.BiaoTi;
+import com.jk.model.common;
 import com.jk.utils.MenuTree;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
@@ -50,4 +51,6 @@ public interface LvMapper {
     //删除黑名单 wzk
     @Delete(" DELETE FROM T_BLACKLIST WHERE ID=#{id} ")
     void deleteblack(@Param("id") String id);
+
+
 }

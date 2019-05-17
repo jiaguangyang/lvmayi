@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>承运商管理</title>
+    <!-- 引入jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- 引入bootstrap的css -->
+    <link  href="/js/bootstrap/css/bootstrap.min.css" rel="stylesheet" >
+    <!-- 引入bootstrap-treeview的css -->
+    <link  href="/js/treeview/bootstrap-treeview.min.css" rel="stylesheet" >
+    <!-- 引入bootstrap-addTabs的css -->
+    <link  href="/js/addTabs/addTabs.css" rel="stylesheet" >
+    <!-- 引入bootstrap-table的css -->
+    <link  href="/js/table/bootstrap-table.min.css" rel="stylesheet" >
+    <!-- 引入fileinput的css -->
+    <link type="text/css" rel="stylesheet" href="/js/fileinput/css/fileinput.min.css" />
+    <!-- 引入bootstrap的js-->
+    <script type="text/javascript" src="/js/bootstrap/js/bootstrap.min.js"></script>
+    <!-- 引入bootstrap的js-->
+    <script type="text/javascript" src="/js/treeview/bootstrap-treeview.min.js"></script>
+    <!-- 引入bootstrap的js-->
+    <script type="text/javascript" src="/js/addTabs/addTabs.js"></script>
+    <!-- 引入bootstrap-table的js-->
+    <script type="text/javascript" src="/js/table/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="/js/table/locale/bootstrap-table-zh-CN.min.js"></script>
+    <!-- 引入bootbox.js -->
+    <script type="text/javascript" src="/js/bootbox/bootbox.js"></script>
+    <!-- 引入fileinput的js -->
+    <script type="text/javascript" src="/js/fileinput/js/fileinput.min.js"></script>
+    <!--  引入fileinput的js -->
+    <script type="text/javascript" src="/js/fileinput/js/locales/zh.js"></script>
+    <script type="text/javascript" src="/js/fileinput/themes/fa/theme.js"></script>
+    <script src="/js/layer/layer.js"></script>
+</head>
+<body>
+<!--  条件查询的 form  表单  -->
+<!-- 表单 -->
+<form id="pro_from" class="form-inline">
+    <div class="form-group">
+        <label >公司名称</label> <input type="text" class="form-control" id="companyName" placeholder="请输入公司名称">
+    </div>
+    <div class="form-group">
+        <label>公司地址</label> <input type="text" class="form-control" id="companyProvince" placeholder="请输入公司地址">
+    </div>
+    <div class="form-group">
+        <label>联系电话</label> <input type="text" maxlength="12"  placeholder="请输入联系电话" name="companyPhone"  onkeyup="value=value.replace(/[^\d]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"/>
+    </div>
+    <button type="button" class="btn btn-primary" onclick="search()">搜索</button>
+    <button type="button" class="btn btn-info" onclick="reset()">重置</button>
+</form>
+    </div>
+ <!--弹框dialog-->
+<div class="modal fade" title="公司详情" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">详细信息</h4>
+            </div>
+
+            <div id="zhu">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span>关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--更多详情弹框 结束-->
+    <!--查询-->
+<table id="commonTable"></table>
+</body>
+<script>
+    $(function() {
+        commonTable();//初始化用户表格数据
+    })
+
+
+
+    //查看详情
+    function  commonTable() {
+        $("#commonTable").bootstrapTable({
+            url:"/getcommon",
+            method:"post",
+            striped: true,  	// 斑马线效果     默认false
+            //只允许选中一行
+            singleSelect:true,
+            //选中行是不选中复选框或者单选按钮
+            clickToSelect:true,
+            showToggle:true,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            uniqueId: "id",                 //每一行的唯一标识，一般为主键列
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,     //  最少留两列
+            detailView: false,                  //是否显示父子表
+            //发送到服务器的数据编码类型
+            contentType:'application/x-www-form-urlencoded;charset=UTF-8',   //数据编码纯文本  offset=0&limit=5
+            toolbar:'#tabToolBar',   //  工具定义位置
+            columns:[
+                {field:'id',title:"Id",width:100},
+                {field:'companyName',title:'公司名称',width:100},      //  列    field   代表是 后台  传过来的值
+                {field:'relationName',title:'公司负责人',width:100},
+                {field:'companyPhone',title:'联系电话',width:100},
+                {field:'companyProvince',title:'公司地址',width:100},
+                {field:'xx',title:'操作',width:100,formatter:function(value,row,index){
+
+                       var str="<a href=javascript:deletecommon('"+row.id+"')  class='btn btn-danger' role='button'>删除</a>";
+                       str+="  <a href=javascript:detailsdialog('"+row.id+"')  class='btn btn-info' role='button'>查看详情</a>"
+                       return str;
+                    }},
+            ],
+            //传递参数（*）
+            queryParams: function(params) {
+                var whereParams = {
+                    /*
+                        分页  自定义的参数         默认传 limit（展示几条）    offset（从第几条开始    起始条数）
+                    */
+                    "pageSize":params.limit,
+                    "start":params.offset,
+                    "companyName":$("#companyName").val()!=false?($("#companyName").val()):(params.search),//搜索产品名称
+                    "companyProvince":$("#companyProvince").val(),//公司地址 条件查询
+                    "companyPhone":$("#companyPhone").val(),//公司联系电话 条件查询
+
+                }
+                return whereParams;
+            },
+            //前台--排序字段
+            //sortName:'proPrice',
+            //sortOrder:'desc',
+            //前台--搜索框
+            search:true,
+            //启动回车键做搜索功能
+            searchOnEnterKey:true,
+            //分页方式   后台请求的分页方式
+            sidePagination:'server',
+            pagination: true,                   //是否显示分页（*）
+            pageNum: 1,                       //每页的记录行数（*）
+            pageSize: 3,                       //每页的记录行数（*）
+            pageList: [3, 6, 9,12],        //可供选择的每页的行数（*）
+        });
+
+    }
+
+    function  detailsdialog(id){
+        $("#myModalLabel").text("");
+        $('#myModal').modal();
+        $.ajax({
+            url:"/finddetailsdialog",
+            type:"post",
+            data:{id:id},
+            success:function (data) {
+                var html = ""
+                html += "<div style='margin-left:20%'><span><h4>公司详情</h4></span>" +
+                    "<span>公司名称："+data.companyName+"</span><br>" +
+                    " <span>公司简称："+data.companyInfo+"</span><br> " +
+                    "&nbsp;" +
+                    "<span>联系电话："+data.companyPhone+"</span><br>" +
+                    "<span>公司负责人："+data.relationName+"</span>" +
+                    "&nbsp;<br>" +
+                    "<span>公司网站："+data.station+"</span><br>" +
+                    "<span>公司地址："+data.companyProvince+"</span><br>" +
+                    "<span>公司简介："+data.introduction+"</span><br></div>" +
+                    "";
+                $("#zhu").html(html);
+            },error:function () {
+
+            }
+        })
+    }
+
+    /**
+     * 黑名单的 删除
+     * @param id
+     */
+    //loading层
+    function deletecommon(id) {
+        layer.confirm('您确定要删除这条数据吗?', {icon: 3, title:'提示'}, function(index){
+            //do something
+            $.ajax({
+                url:"/deletecommon",
+                type:"post",
+                data:{id:id},
+                success:function (data) {
+                    layer.msg('删除成功');
+                    $("#commonTable").bootstrapTable('refresh');
+                },error:function () {
+                    alert("删除失败");
+                }
+            })
+            layer.close(index);
+        });
+    }
+    /*条件查询*/
+    function  search(){
+        $("#commonTable").bootstrapTable("refresh",{
+            "query":{
+                "companyName":$("#companyName").val(),
+                "companyProvince":$("#companyProvince").val(),
+                "companyPhone":$("#companyPhone").val(),
+            }
+        });
+    }
+
+
+</script>
+</html>

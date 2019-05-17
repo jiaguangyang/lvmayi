@@ -1,6 +1,7 @@
 package com.jk.service;
 
 import com.jk.model.BiaoTi;
+import com.jk.model.common;
 import com.jk.utils.MenuTree;
 
 import java.util.HashMap;
@@ -30,4 +31,5 @@ public interface LvService {
 
     //删除黑名单
     void deleteblack(String id);
+
 }

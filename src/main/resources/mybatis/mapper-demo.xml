@@ -19,4 +19,9 @@
     </set>
         where id=#{id}
     </update>
+   <!-- 查询 承运商 分页 条查-->
+    <select id="getcommon" resultType="com.jk.model.common">
+
+    </select>
+
 </mapper>
