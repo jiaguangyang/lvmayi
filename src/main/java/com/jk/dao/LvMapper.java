@@ -18,7 +18,7 @@ public interface LvMapper {
     List<MenuTree> getTreeAll();
 
     //黑名单的 查询 分页 wzk
-    @Select(" select * from t_blacklist ORDER BY BLACKTIME DESC limit #{start},#{pageSize} ")
+    @Select(" SELECT * FROM T_BLACKLIST ORDER BY BLACKTIME DESC limit #{start},#{pageSize}")
     List<LinkedHashMap<String, Object>> getblacklist(@Param("start") Integer start,@Param("pageSize") Integer pageSize);//查询 黑名单 wzk
 
     //查询 黑名单总条数 wzk
