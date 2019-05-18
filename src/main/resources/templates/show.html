@@ -22,8 +22,8 @@
             <a class="navbar-brand" href="find?url=show">绿蚂蚁后台管理系统</a>
         </div>
         <div class="navbar-right">
-            <font color="white" size="4px">欢迎您! <a class="navbar-brand"  href="/toAccountInfo">
-            </a></font>
+            <font color="white" size="4px">欢迎您!   <span th:text="${session.username}"></span>
+            </font>
             <button type="button" class="btn btn-danger glyphicon glyphicon-off" onclick="zhuXiao()">注销</button>
         </div>
     </div>
@@ -55,6 +55,7 @@
 </div>
 </body>
 <script type="text/javascript">
+    //注销登录
     function zhuXiao(){
         location.href="/logout";
     }
@@ -82,6 +83,6 @@
             }
         })
     }
-  /*  th:text="${session.user.userName}"*/
+
 </script>
 </html>

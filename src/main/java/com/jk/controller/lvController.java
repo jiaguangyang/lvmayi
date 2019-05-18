@@ -3,6 +3,7 @@ package com.jk.controller;
 import com.jk.model.BiaoTi;
 import com.jk.model.Ossbean;
 import com.jk.model.User;
+import com.jk.rmi.ThisClient;
 import com.jk.service.LvService;
 import com.jk.utils.Constant;
 import com.jk.utils.MenuTree;
@@ -20,6 +21,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -27,6 +29,20 @@ import javax.servlet.http.HttpSession;
 public class lvController {
     @Autowired
     private LvService lvService;
+
+    @Autowired
+    private ThisClient thisClient;
+    //发送手机验证码
+    @RequestMapping(value="findSmsCode",produces="application/json;charset=utf-8")
+    @ResponseBody
+    public HashMap<String,Object> findSmsCode(String loginNumber,HttpSession session){
+        HashMap<String, Object> hashMap = thisClient.findDxCode(loginNumber);
+        UserBean user = (UserBean) hashMap.get("user");
+        if ((Integer) hashMap.get("status")==0){
+            session.setAttribute("phone",user.getUserPhone());
+        }
+        return hashMap;
+    }
 
     //jgy删除标题
     @RequestMapping("deleteBiaoti")
@@ -127,9 +143,11 @@ public class lvController {
     @RequestMapping("login")
     @ResponseBody
     public HashMap<String,Object> login(HttpServletResponse response, User user, HttpSession session){
-       User user1= lvService.findUser(user);
+        user.setType(1);
+       User user1= thisClient.findUser(user);
             HashMap<String, Object> hashMap = new HashMap<>();
         if (user1!=null){
+            session.setAttribute("username",user1.getUserLogin());
            if (user.getRemPwd()!=null){
                Cookie cookie = new Cookie(Constant.cookieNamePwd,user.getUsername()+Constant.splitstr+user.getPassword());
                cookie.setMaxAge(604800);
@@ -152,10 +170,40 @@ public class lvController {
         return hashMap;
     }
 
+    //跳转登陆页面
+    @RequestMapping("tologin")
+    public String tologin(HttpServletRequest request, Model model){
+        Cookie[] cookies = request.getCookies();
+        if (cookies!=null){
+            for (Cookie cookie : cookies){
+                if (cookie.getName().equals(Constant.cookieNamePwd)){
+                    String value = cookie.getValue();
+                    String[] split = value.split(Constant.splitstr);
+                    model.addAttribute("username",split[0]);
+                    model.addAttribute("password",split[1]);
+                }
+            }
+        }
+        return "UserLogin";
+    }
+
     //查询轮播图
     @RequestMapping("findOssTable")
     @ResponseBody
     public HashMap<String,Object> findOssTable(Integer start,Integer pageSize){
         return lvService.findOssTable(start,pageSize);
+    }
+
+    //注销
+    @RequestMapping("logout")
+    public String logout(HttpSession session){
+        session.invalidate();
+        return "UserLogin";
+    }
+
+    @RequestMapping("getSession")
+    @ResponseBody
+    public String getSession(String ssionKey,HttpSession session){
+      return   session.getAttribute(ssionKey).toString();
     }
 }

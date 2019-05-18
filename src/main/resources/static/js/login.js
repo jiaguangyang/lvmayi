@@ -86,7 +86,8 @@
             if (b.code) {
 
                 $("#verifyYz").click(function() {
-	                if($('#phone').val().length){
+
+                    if($('#phone').val().length){
 		                $('.msg').hide()
 		                $("#time_box").text("60s后可重发");
 		                d._sendVerify()
