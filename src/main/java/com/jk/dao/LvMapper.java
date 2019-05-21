@@ -64,11 +64,12 @@ public interface LvMapper {
 
     //删除轮播图
     @Delete("delete from t_oss where id in(${btid})")
-    void deleteLunbo(String btid);
+    void deleteLunbo(@Param("btid") String btid);
 
     void upHref(Ossbean ossbean);
 
     void addLunbo(Ossbean ossbean);
 
-
+   @Select("select count(*) from t_oss ")
+    Integer getOssTableTotal();
 }

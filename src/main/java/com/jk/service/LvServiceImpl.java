@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,12 +35,14 @@ public class LvServiceImpl implements LvService{
         Jedis resource = jedisPool.getResource();
         if(StringUtils.isNotEmpty(resource.get("tree"))){
             String tree = resource.get("tree");
+            resource.close();
             return tree;
         }else{
             List<MenuTree> list= lvMapper.getTreeAll();
             List<MenuTree> tree = TreeNoteUtil.getFatherNode(list);
             String jsonString = JSON.toJSONString(tree);
             resource.setex("tree", 20,jsonString);
+            resource.close();
             return jsonString;
         }
 
@@ -77,9 +80,10 @@ public class LvServiceImpl implements LvService{
     //查询轮播图
     @Override
     public HashMap<String, Object> findOssTable(Integer start, Integer pageSize) {
+       Integer total= lvMapper.getOssTableTotal();
         List<Ossbean> list =lvMapper.findOssTable(start,pageSize);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("total", list.size());
+        map.put("total",total);
         map.put("rows", list);
         return map;
     }
@@ -94,6 +98,29 @@ public class LvServiceImpl implements LvService{
     @Override
     public void addLunbo(Ossbean ossbean) {
         lvMapper.addLunbo(ossbean);
+    }
+
+
+    //手机号登录
+    @Override
+    public HashMap<String, Object> numlogin(String phone, String smsCode) {
+        Jedis jedis = jedisPool.getResource();
+        String code = jedis.get(phone);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        jedis.close();
+        if (StringUtils.isNotEmpty(code)){
+            if (code.equals(smsCode)){
+                hashMap.put("status",0);
+                hashMap.put("msg","登陆成功");
+            }else{
+                hashMap.put("status",1);
+                hashMap.put("msg","验证码错误");
+            }
+        }{
+            hashMap.put("status",1);
+            hashMap.put("msg","验证码已过期");
+        }
+        return hashMap;
     }
 
     //jgy查询标题表

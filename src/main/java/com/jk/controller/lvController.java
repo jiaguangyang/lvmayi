@@ -1,5 +1,7 @@
 package com.jk.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.jk.model.BiaoTi;
 import com.jk.model.Ossbean;
 import com.jk.model.User;
@@ -16,9 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,16 +31,56 @@ public class lvController {
 
     @Autowired
     private ThisClient thisClient;
+
+    //邮箱登录
+    @RequestMapping("emailLogin")
+    @ResponseBody
+    public HashMap<String,Object> emailLogin(String email,String emailCode,HttpSession session){
+        HashMap<String,Object> map= thisClient.emailLogin(email,emailCode,1);
+        if ((Integer)map.get("status")==0){
+            User user = (User)session.getAttribute("usr");
+            session.setAttribute("user",user);
+        }
+        return map;
+    }
+
+    //手机号登录
+    @RequestMapping("numlogin")
+    @ResponseBody
+    public HashMap<String,Object> numlogin(String phone,String smsCode,HttpSession session){
+        HashMap<String,Object> map= thisClient.numlogin(phone,smsCode,1);
+                  if ((Integer)map.get("status")==0){
+                      User user = (User)session.getAttribute("usr");
+                      session.setAttribute("user",user);
+                  }
+        return map;
+    }
+
+
+
+
     //发送手机验证码
     @RequestMapping(value="findSmsCode",produces="application/json;charset=utf-8")
     @ResponseBody
     public HashMap<String,Object> findSmsCode(String loginNumber,HttpSession session){
-        HashMap<String, Object> hashMap = thisClient.findDxCode(loginNumber);
-        UserBean user = (UserBean) hashMap.get("user");
+        HashMap<String, Object> hashMap = thisClient.findDxCode(loginNumber,1);
         if ((Integer) hashMap.get("status")==0){
-            session.setAttribute("phone",user.getUserPhone());
+            String  user = hashMap.get("user").toString();
+            session.setAttribute("usr",JSON.parseObject(user,User.class));
         }
+
         return hashMap;
+    }
+
+    //发送QQ邮箱验证码
+    @RequestMapping("getCheckCode")
+    @ResponseBody
+    public HashMap<String,Object> getCheckCode(String email, HttpSession session){
+        HashMap<String,Object> map= thisClient.getCheckCode(email,1);
+        if ((Integer)map.get("status")==0){
+            session.setAttribute("usr",JSON.parseObject(map.get("user").toString(),User.class));
+        }
+        return map;
     }
 
     //jgy删除标题
@@ -142,32 +181,32 @@ public class lvController {
     //用户登录
     @RequestMapping("login")
     @ResponseBody
-    public HashMap<String,Object> login(HttpServletResponse response, User user, HttpSession session){
-        user.setType(1);
-       User user1= thisClient.findUser(user);
-            HashMap<String, Object> hashMap = new HashMap<>();
-        if (user1!=null){
-            session.setAttribute("username",user1.getUserLogin());
-           if (user.getRemPwd()!=null){
-               Cookie cookie = new Cookie(Constant.cookieNamePwd,user.getUsername()+Constant.splitstr+user.getPassword());
-               cookie.setMaxAge(604800);
-               response.addCookie(cookie);
+    public HashMap<String,Object> login(HttpServletResponse response, String username,String password,Integer remPwd , HttpSession session,Model model){
+        HashMap<String,Object>  map= thisClient.findUser(username,password,1);
+            if ((Integer) map.get("status")==0){
+                String ur = map.get("usr").toString();
+                User usr = JSON.parseObject(ur,User.class);
 
-           }else{
-               Cookie cookie = new Cookie(Constant.cookieNamePwd,"");
-               cookie.setMaxAge(0);
-               response.addCookie(cookie);
-           }
-            hashMap.put("msg","登陆成功");
-            hashMap.put("success",true);
-       }else{
-            Cookie cookie = new Cookie(Constant.cookieNamePwd,"");
-            cookie.setMaxAge(0);
-            response.addCookie(cookie);
-            hashMap.put("msg","账号密码错误");
-            hashMap.put("success",false);
-        }
-        return hashMap;
+                if (usr!=null){
+                    session.setAttribute("username",usr.getUserLogin());
+                    if (remPwd!=null){
+                        Cookie cookie = new Cookie(Constant.cookieNamePwd,username+Constant.splitstr+password);
+                        cookie.setMaxAge(604800);
+                        response.addCookie(cookie);
+                        model.addAttribute("password",1);
+                    }else{
+                        Cookie cookie = new Cookie(Constant.cookieNamePwd,"");
+                        cookie.setMaxAge(0);
+                        response.addCookie(cookie);
+                    }
+                }else{
+                    Cookie cookie = new Cookie(Constant.cookieNamePwd,"");
+                    cookie.setMaxAge(0);
+                    response.addCookie(cookie);
+                }
+            }
+
+        return map;
     }
 
     //跳转登陆页面
@@ -184,7 +223,7 @@ public class lvController {
                 }
             }
         }
-        return "UserLogin";
+        return "newLogin";
     }
 
     //查询轮播图

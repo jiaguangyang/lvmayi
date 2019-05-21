@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>承运商登录</title>
+    <!-- 引入jquery -->
+    <script type="text/javascript" src="/js3/jquery-1.9.1.min.js"></script>
+    <script src="/js2/layui/layui.js"></script>
+    <link rel="stylesheet" href="/js2/layui/css/layui.css">
+    <link rel="stylesheet" type="text/css" href="/js/easyui-1.7.0/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/js/easyui-1.7.0/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/js/easyui-1.7.0/demo.css">
+    <script type="text/javascript" src="/js/easyui-1.7.0/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-1.7.0/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/js/easyui-1.7.0/plugins/jquery.datagrid.js"></script>
+    <script type="text/javascript" src="/js/easyui-1.7.0/locale/easyui-lang-zh_CN.js"></script>
+    <!--  引入layer-->
+   <!-- <script src="/js/layer/layer.js"></script>-->
+</head>
+<style>
+   /* body {
+        width：100%;
+        height: 100%;
+        background-image: url(/js/css/4.png);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }*/
+    *{
+        margin:0;
+        padding:0;
+    }
+</style>
+<body style="background: url('/js/css/4.png')no-repeat center ;background-size: 100% 150%;">
+
+<div class="layui-tab" style="float:left;height:350px;width:500px;background-color: white;margin-left: 400px;margin-top: 150px">
+    <ul class="layui-tab-title">
+        <li class="layui-this">账号密码登录</li>
+        <li>手机登录</li>
+        <li>邮箱登录</li>
+    </ul>
+    <div class="layui-tab-content"style="height: 100px">
+        <div class="layui-tab-item layui-show">
+            <div id="userloginForm"  method="post">
+            账号:<br>
+            <input class="layui-input" id="account"  autocomplete="off"><br>
+            密码:<br>
+            <input class="layui-input" type="password" id="password"  autocomplete="off"><br>
+            <input  th:checked="${password}==null?'false':'checked'"   type="checkbox" name="remPwd" value="1">记住密码<br>
+            <button class="layui-btn" data-type="reload" id="loginbt">登录</button>
+            </div>
+        </div>
+        <div class="layui-tab-item">
+            手机号:<br> <!--class="layui-btn layui-btn-primary layui-btn-mini" lay-event="detail"-->
+            <input class="layui-input" id="phone"  autocomplete="off">
+            <img onclick="getImg(this)" alt="加载中-----" src="/img/getImgCode">
+            验证码:  <input type="text" id="imgcode" size="5"/>
+            <a onclick="findSmsCode()" class="easyui-linkbutton" id="findSmsCodeBtn">获取验证码</a><br>
+            <input class="layui-input" id="verifyNo"  autocomplete="off" placeholder="动态码">
+            <button class="layui-btn" data-type="reload" onclick="getdx()" id="numloginbt">登录</button>
+        </div>
+        <div class="layui-tab-item">
+            <input class="layui-input" id="email"  autocomplete="off">
+            <a onclick="getCheckCode()" class="easyui-linkbutton" >获取QQ邮箱验证码</a><br>
+            <input  id="emailcode"   placeholder="请输入邮箱验证码"><br>
+            <button class="layui-btn" data-type="reload"  id="emailloginbt">登录</button>
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+    $("#emailloginbt").click(function () {
+        $.ajax({
+            url:"/emailLogin",
+            type:"post",
+            data:{
+                "email":$("#email").val(),
+                "emailCode":$("#emailcode").val()
+            },success:function (data) {
+                if (data.status==0){
+                    layui.use('layer', function(){
+                        var layer = layui.layer;
+
+                        layer.msg(data.msg);
+                    });
+                    location.href="/find?url=show";
+                }else{
+                    layui.use('layer', function(){
+                        var layer = layui.layer;
+
+                        layer.msg(data.msg);
+                    });
+                    location.reload();
+                }
+            },error:function () {
+                
+            }
+        });
+    });
+    
+    function getCheckCode() {
+       var email= $("#email").val();
+        var reg=/^\d{6,12}@qq\.com$/
+        if (reg.test(email)==false){
+            layer.msg("邮箱格式错误,暂时只支持QQ邮箱")
+            return false;
+        }else{
+            $.ajax({
+                url:"getCheckCode",
+                type:"post",
+                data:{"email":$("#email").val()},
+                success:function (data) {
+                    if (data.status==0){
+                        layui.use('layer', function(){
+                            var layer = layui.layer;
+
+                            layer.msg(data.msg);
+                        });
+                    }else{
+                        layui.use('layer', function(){
+                            var layer = layui.layer;
+
+                            layer.msg(data.msg);
+                        });
+                    }
+                },error:function () {
+                    
+                }
+            });
+        }
+
+    }
+
+    function getdx() {
+            $.ajax({
+                url:"/numlogin",
+                type:"post",
+                data:{
+                    "smsCode":$("#verifyNo").val(),
+                  "phone":$("#phone").val()
+                },
+                success:function (data) {
+                    if (data.status==0){
+                        layui.use('layer', function(){
+                            var layer = layui.layer;
+
+                            layer.msg(data.msg);
+                        });
+                        location.href="/find?url=show";
+                    }else{
+                        layui.use('layer', function(){
+                            var layer = layui.layer;
+
+                            layer.msg(data.msg);
+                        });
+                        location.reload();
+                    }
+
+                },error:function () {
+
+                }
+            });
+
+    }
+    function getSession(ssionKey) {
+        var str;
+        $.ajax({
+            url:"/getSession",
+            type:"post",
+            data:{"ssionKey":ssionKey},
+            async:false,
+            success:function (data) {
+                str=data;
+            },error:function () {
+
+            }
+        });
+        return str;
+    }
+    $("#loginbt").click(function() {
+        $.ajax({
+            url:"/login",
+            type:"post",
+            data:{
+                "username":$("#account").val(),
+                "password":$("#password").val(),
+                "remPwd":$("[name='remPwd']:checked").val()
+            },
+            success:function (data) {
+                if (data.status==0){
+                    layui.use('layer', function(){
+                        var layer = layui.layer;
+
+                        layer.msg(data.msg);
+                    });
+                    location.href="/find?url=show";
+                }else{
+                    layui.use('layer', function(){
+                        var layer = layui.layer;
+
+                        layer.msg(data.msg);
+                    });
+                    location.reload();
+                }
+            },error:function () {
+            }
+        });
+    });
+
+    //注意：选项卡 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function(){
+        var element = layui.element;
+
+        //…
+    });
+    var countdown = 0;
+    //获取验证码
+    function findSmsCode(){
+        var loginNumber = $("#phone").val();
+        if (loginNumber==''||loginNumber.length!=11){
+            layer.msg("请输入正确的手机号");
+            return false;
+        }
+        var session= getSession("checkcode");
+        var imgcode=$("#imgcode").val();
+        if (imgcode!=session){
+            layer.msg("图形验证码错误");
+            return false;
+        }
+        $.ajax({
+            url:'/findSmsCode',
+            type:'post',
+            data:{
+                loginNumber:loginNumber
+            },
+            success:function(data){
+                layui.use('layer', function(){
+                    var layer = layui.layer;
+
+                    layer.msg(data.msg);
+                });
+                countdown = 60;
+                setInterval(time, 1000);
+            },error:function () {
+                layui.use('layer', function(){
+                    var layer = layui.layer;
+
+                    layer.msg("发送失败");
+                });
+            }
+        })
+    }
+
+
+
+    var time = function djs(){
+        $("#findSmsCodeBtn").prop("click",null);
+        $("#findSmsCodeBtn").linkbutton({text:"重新发送("+countdown+")秒"});
+        countdown--;
+        if(countdown<=0){
+            $("#findSmsCodeBtn").linkbutton({text:"获取验证码"});
+            $("#findSmsCodeBtn").bind('click',function(){
+                findSmsCode();
+            })
+            clearInterval(time);
+        }
+    }
+    function getImg(obj){
+        //obj代表当前对象也就是图片对象
+        //$(obj) 把js对象转jq对象
+        var date = new Date().getTime();
+        //拼接访问路径
+        var str = "/img/getImgCode?ss="+date;
+
+        $(obj).prop("src",str);
+    }
+</script>
+</html>

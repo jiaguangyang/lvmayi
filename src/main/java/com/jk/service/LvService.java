@@ -6,6 +6,7 @@ import com.jk.model.User;
 import com.jk.model.common;
 import com.jk.utils.MenuTree;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,4 +45,7 @@ public interface LvService {
 
     //新增轮播图
     void addLunbo(Ossbean ossbean);
+
+    //手机号登录
+    HashMap<String, Object> numlogin(String phone, String smsCode);
 }

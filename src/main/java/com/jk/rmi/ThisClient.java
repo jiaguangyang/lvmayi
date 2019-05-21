@@ -14,9 +14,21 @@ import java.util.HashMap;
 public interface ThisClient {
     @RequestMapping("userLogin")
     @ResponseBody
-    User findUser(@RequestBody User user);
+    HashMap<String, Object> findUser(@RequestParam("username")String username,@RequestParam("password") String password,@RequestParam("type") Integer type);
 
     @RequestMapping("findDxCode")
     @ResponseBody
-    HashMap<String, Object> findDxCode(@RequestParam("loginNumber") String loginNumber);
+    HashMap<String, Object> findDxCode(@RequestParam("loginNumber") String loginNumber,@RequestParam("type")Integer type);
+
+    @RequestMapping("getCheckCode")
+    @ResponseBody
+    HashMap<String, Object> getCheckCode(@RequestParam("email")String email,@RequestParam("type")Integer type);
+
+    @RequestMapping("numlogin")
+    @ResponseBody
+    HashMap<String, Object> numlogin(@RequestParam("phone")String phone, @RequestParam("smsCode")String smsCode,@RequestParam("type")Integer type);
+
+    @RequestMapping("emailLogin")
+    @ResponseBody
+    HashMap<String, Object> emailLogin(@RequestParam("email")String email, @RequestParam("emailCode")String emailCode,@RequestParam("type")Integer type);
 }

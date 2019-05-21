@@ -17,7 +17,6 @@ public class User {
 
     private  String userLogin;
     private String username;
-    private Integer type;
     private String email;
 
     private String password;

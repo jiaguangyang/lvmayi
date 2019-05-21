@@ -4,11 +4,13 @@ import com.jk.model.common;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+@Repository
 public interface commonMapper {
     // 查询 承运商总条数 wzk   2019-5-17 14:47:11
     @Select("select count(id) from t_commpany")
