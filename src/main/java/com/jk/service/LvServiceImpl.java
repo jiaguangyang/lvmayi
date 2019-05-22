@@ -91,12 +91,18 @@ public class LvServiceImpl implements LvService{
     //修改路径
     @Override
     public void upHref(Ossbean ossbean) {
+        Jedis resource = jedisPool.getResource();
+        resource.del("luobo");
+        resource.close();
         lvMapper.upHref(ossbean);
     }
 
     //新增轮播图
     @Override
     public void addLunbo(Ossbean ossbean) {
+        Jedis resource = jedisPool.getResource();
+        resource.del("luobo");
+        resource.close();
         lvMapper.addLunbo(ossbean);
     }
 
@@ -137,6 +143,9 @@ public class LvServiceImpl implements LvService{
     //jgy新增或修改标题
     @Override
     public void addBiaoti(BiaoTi bt) {
+        Jedis resource = jedisPool.getResource();
+        resource.del("biaoti");
+        resource.close();
         if (bt.getId()!=null){
             //修改标题
             lvMapper.updateBiaoti(bt);
@@ -150,6 +159,9 @@ public class LvServiceImpl implements LvService{
     //jgy删除标题
     @Override
     public void deleteBiaoti(String btid,Integer type) {
+        Jedis resource = jedisPool.getResource();
+        resource.del("biaoti");
+        resource.close();
      if (type==1){
          lvMapper.deleteBiaoti(btid);
      }

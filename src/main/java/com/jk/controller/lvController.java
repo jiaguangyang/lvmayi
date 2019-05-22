@@ -237,7 +237,7 @@ public class lvController {
     @RequestMapping("logout")
     public String logout(HttpSession session){
         session.invalidate();
-        return "UserLogin";
+        return "newLogin";
     }
 
     @RequestMapping("getSession")
