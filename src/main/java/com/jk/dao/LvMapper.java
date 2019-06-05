@@ -1,13 +1,11 @@
 package com.jk.dao;
 
-import com.jk.model.BiaoTi;
-import com.jk.model.common;
-import com.jk.model.Ossbean;
-import com.jk.model.User;
+import com.jk.model.*;
 import com.jk.utils.MenuTree;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -62,6 +60,9 @@ public interface LvMapper {
     @Select("select * from t_oss limit #{start},#{pageSize}")
     List<Ossbean> findOssTable(@Param("start") Integer start,@Param("pageSize") Integer pageSize);
 
+    @Select("select * from t_poster order by type limit #{start},#{pageSize}")
+    List<Ossbean> getPoster(@Param("start")Integer start, @Param("pageSize")Integer pageSize);
+
     //删除轮播图
     @Delete("delete from t_oss where id in(${btid})")
     void deleteLunbo(@Param("btid") String btid);
@@ -72,4 +73,30 @@ public interface LvMapper {
 
    @Select("select count(*) from t_oss ")
     Integer getOssTableTotal();
+
+   @Select("select count(*) from t_poster")
+    Integer getPosterTableTotal();
+
+
+    void addPoster(Ossbean ossbean);
+
+    @Delete("delete from t_poster where id=#{0}")
+    void deletePoster(String btid);
+
+    @Update("update t_poster set status=1 where id=#{0}")
+    void updatePosterStatus(String id);
+
+    @Update("update t_poster set status=0 where id!=#{id} and type=#{type}")
+    void updateOrtherPoster(@Param("id") String id,@Param("type")Integer type);
+
+    @Select("select * from t_blacklist where id in( ${ids} )")
+    List<Black> findBlackListByid(@Param("ids") String ids);
+
+    @Select("select COUNT(*) from student ")
+    Integer findStuCount();
+
+    List<Student> findstu(@Param("start") Integer start,@Param("limit") Integer limit, @Param("stu") Student stu);
+
+    @Select("select * from student where sid in( ${ids} )")
+    List<LinkedHashMap<String,Object>> findstuByid(@Param("ids")String ids);
 }

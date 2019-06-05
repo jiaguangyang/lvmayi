@@ -1,5 +1,6 @@
 package com.jk.service;
 
+import com.jk.model.Tixian;
 import com.jk.model.common;
 
 import java.util.HashMap;
@@ -12,4 +13,15 @@ public interface commonService {
 
     //查询 详情
     HashMap<String, Object> finddetailsdialog(String id);
+
+    String getSumByid(Integer id);
+
+
+
+
+    void updatesum(Tixian ti);
+
+    void addcaiwu(Tixian ti);
+
+    void addtixianjilu(Tixian ti);
 }

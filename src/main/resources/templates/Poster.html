@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>广告管理</title>
+    <!-- 引入jquery -->
+    <script type="text/javascript" src="/js3/jquery-1.9.1.min.js"></script>
+    <!-- 引入bootstrap的css、js -->
+    <link rel="stylesheet" href="/js3/bootstrap3/css/bootstrap.css">
+    <script type="text/javascript" src="/js3/bootstrap3/js/bootstrap.js"></script>
+    <!-- 引入tree的js、css -->
+    <link rel="stylesheet" href="/js3/bootstrap-treeview/bootstrap-treeview.min.css">
+    <script type="text/javascript" src="/js3/bootstrap-treeview/bootstrap-treeview.min.js"></script>
+    <!-- 引入选项卡的js、css -->
+    <link rel="stylesheet" href="/js3/bootStrap-addTabs/bootstrap.addtabs.css">
+    <script type="text/javascript" src="/js3/bootStrap-addTabs/bootstrap.addtabs.min.js"></script>
+    <!-- 引入table的css、js -->
+    <link rel="stylesheet" href="/js3/bootstrap-table/bootstrap-table.css">
+    <script type="text/javascript" src="/js3/bootstrap-table/bootstrap-table.js"></script>
+    <script type="text/javascript" src="/js3/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+    <!-- 引入删除提示框 -->
+    <script type="text/javascript" src="/js3/bootbox/bootbox.min.js"></script>
+    <!-- 引入时间的css、js -->
+    <link rel="stylesheet" href="/js3/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+    <script  src="/js3/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+    <script  src="/js3/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <!-- 引入文件上传的css、js -->
+    <link rel="stylesheet" href="/js3/bootstrap-fileinput/css/fileinput.css">
+    <script type="text/javascript" src="/js3/bootstrap-fileinput/js/fileinput.js"></script>
+    <script type="text/javascript" src="/js3/bootstrap-fileinput/js/locales/zh.js"></script>
+    <!--  引入layer-->
+    <script src="/js/layer/layer.js"></script>
+</head>
+<body>
+<input type="button" class="btn btn-success" value="新增广告" onclick="addPoster()">
+<table id="posertTable"></table>
+</body>
+<script>
+
+    function getPoster(){
+        $("#posertTable").bootstrapTable({
+            url:"getPoster",
+            method:"post",
+            striped: true,  	// 斑马线效果     默认false
+            //只允许选中一行
+            singleSelect:true,
+            //选中行是不选中复选框或者单选按钮
+            clickToSelect:true,
+            showToggle:true,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            uniqueId: "id",                 //每一行的唯一标识，一般为主键列
+            showColumns: true,                  //是否显示所有的列
+            showRefresh: true,                  //是否显示刷新按钮
+            minimumCountColumns: 2,     //  最少留两列
+            detailView: false,                  //是否显示父子表
+            //发送到服务器的数据编码类型
+            contentType:'application/x-www-form-urlencoded;charset=UTF-8',   //数据编码纯文本  offset=0&limit=5
+            toolbar:'#tabToolBar',   //  工具定义位置
+            columns:[
+                {field:'id',title:"Id",width:100},     //  列    field   代表是 后台  传过来的值
+                {field:'hrefname',title:'跳转地址',width:100},
+                {field:'url',title:'图片',width:100,formatter:function(value,row,index){
+                        return"<img src='"+value+"' width='100px' height='50px'>";
+                    }},
+                {field:'type',title:'图片类型',width:100,formatter:function(value,row,index){
+                       if (value==1){
+                           return "浮动广告";
+                       }else{
+                           return "横幅广告";
+                       }
+                    }},
+                {field:'status',title:'状态',width:100,formatter:function(value,row,index){
+                        if (value==0) {
+                           return "隐藏";
+                        }else{
+                            return "展示中";
+                        }
+                    }},
+                {field:'xx',title:'操作',width:100,formatter:function(value,row,index){
+                        return "<a href=javascript:deletePoster('"+row.id+"')>删除</a> |" +
+                            " <a href=javascript:updateStatus('"+row.id+"','"+row.type+"')>展示此广告</a>";
+                    }},
+            ],
+            //传递参数（*）
+            queryParams: function(params) {
+                var whereParams = {
+                    /*
+                        分页  自定义的参数         默认传 limit（展示几条）    offset（从第几条开始    起始条数）
+                    */
+                    "pageSize":params.limit,
+                    "start":params.offset
+                }
+                return whereParams;
+            },
+            //前台--排序字段
+            //sortName:'proPrice',
+            //sortOrder:'desc',
+            //前台--搜索框
+            search:true,
+            //启动回车键做搜索功能
+            searchOnEnterKey:true,
+            //分页方式   后台请求的分页方式
+            sidePagination:'server',
+            pagination: true,                   //是否显示分页（*）
+            pageNum: 1,                      //每页的记录行数（*）
+            pageSize: 4,                       //每页的记录行数（*）
+            pageList: [4,10,12],        //可供选择的每页的行数（*）
+        });
+
+    }
+
+    function updateStatus(id,type) {
+        layer.msg('确定展示?', {
+            time: 0 //不自动关闭
+            ,btn: ['展示', '取消']
+            ,yes: function(index){
+                layer.close(index);
+                $.ajax({
+                    url:"/updatePosterStatus",
+                    type:"post",
+                    data:{"id":id,
+                    "type":type},
+                    success:function (data) {
+                        layer.msg('成功展示');
+                        $("#posertTable").bootstrapTable('refresh');
+                    },error:function () {
+
+                    }
+                });
+
+            }
+        });
+    }
+
+    function deletePoster(id){
+        layer.msg('确定删除?', {
+            time: 0 //不自动关闭
+            ,btn: ['必须啊', '留着吧']
+            ,yes: function(index){
+                layer.close(index);
+                $.ajax({
+                    url:"/deleteBiaoti",
+                    type:"post",
+                    data:{"btid":id,
+                        "type":3},
+                    success:function (data) {
+                        layer.msg('删除成功');
+                        $("#posertTable").bootstrapTable('refresh');
+                    },error:function () {
+
+                    }
+                });
+
+            }
+        });
+
+    }
+
+    $(function () {
+        getPoster();
+    });
+
+    function addPoster(){
+        dialog("/find?url=addPoster","/addPoster","新增广告");
+    }
+
+    function getJspHtml(urlStr){
+        var  jspHtml = "";
+//	 async  (默认: true) 默认设置下，所有请求均为异步请求。如果需要发送同步请求，请将此选项设置为 false。
+//注意，同步请求将锁住浏览器，用户其它操作必须等待请求完成才可以执行。
+        $.ajax({
+            url:urlStr,
+            type:'post',
+            //同步的ajax
+            async:false,
+            success:function(data){
+                //alert(data);//data--addProduct.jsp页面内容
+                jspHtml = data;
+            },
+            error:function(){
+                bootbox.alert("失败");
+            }
+        });
+        return jspHtml;
+    }
+
+
+    function  dialog(HTMLurl,submitUrl,title){
+        var dialog = bootbox.dialog({
+            title: title,
+            message: getJspHtml(HTMLurl),   //调用方法
+            buttons:{
+                "save":{
+                    label: '保存',
+                    //自定义样式
+                    className: "btn-success",
+                    callback: function() {
+                        var data= $("#updatehrefform").serialize();
+                        layer.load();
+                        $.ajax({
+                            url:submitUrl,
+                            type:'post',
+                            data:data,
+                            success:function(data){
+                                setTimeout(function(){
+                                    layer.closeAll('loading');
+                                }, 500);
+                                layer.msg('保存成功');
+                                $("#posertTable").bootstrapTable('refresh');
+                            },
+                            error:function(){
+                                bootbox.alert("ajax失败");
+                            }
+                        });
+                    }
+                },
+                "unSave":{
+                    label: '取消',
+                    //自定义样式
+                    className: "btn-info",
+                    callback: function() {
+                        // return false;  //dialog不关闭
+                    }
+                }
+            }
+        });
+    }
+</script>
+</html>

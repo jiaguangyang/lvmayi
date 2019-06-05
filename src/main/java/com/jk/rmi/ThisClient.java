@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 
-@FeignClient("loginservice")
+@FeignClient(value="loginservice2",fallback =ThisClientHystrix.class )
 public interface ThisClient {
     @RequestMapping("userLogin")
     @ResponseBody

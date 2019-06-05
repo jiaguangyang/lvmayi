@@ -1,5 +1,6 @@
 package com.jk.controller;
 
+import com.jk.model.Tixian;
 import com.jk.model.common;
 import com.jk.service.commonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,20 @@ import java.util.HashMap;
 public class commonController {
     @Autowired
     private commonService commonService;
+
+    @RequestMapping("tixian")
+    @ResponseBody
+    public void tixian(Tixian ti){
+        commonService.updatesum(ti);
+        commonService.addcaiwu(ti);
+        commonService.addtixianjilu(ti);
+    }
+
+    @RequestMapping("getSumByid")
+    @ResponseBody
+    public String getSumByid(Integer id){
+        return commonService.getSumByid(id);
+    }
 
     /**
      * 查询 条查 分页 wzk

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>学生表</title>
+    <script src="/js2/jquery.min.js"></script>
+    <script src="/js2/layui/layui.js"></script>
+    <link rel="stylesheet" href="/js2/layui/css/layui.css">
+</head>
+<body>
+<form class="layui-form">
+    <div class="layui-form-item">
+        时间范围:<br><br>
+<div class="layui-input-inline">
+    <input type="text" class="layui-input" id="startPlaceDate" placeholder="yyyy-MM-dd">
+</div>
+<div class="layui-input-inline">
+    <input type="text" class="layui-input" id="endPlaceDate" placeholder="yyyy-MM-dd">
+</div>
+        <div class="layui-input-inline">
+            姓名:<input class="layui-input"  id="sname" autocomplete="off">
+        </div>
+    </div>
+</form>
+<button class="layui-btn" data-type="reload" id="anniu">搜索</button>
+<button class="layui-btn" data-type="reload" onclick="exportExcel()">导出Excel表格</button>
+<button class="layui-btn"  onclick="exportWord()">导出Word表格</button>
+<table class="layui-hide" id="test"></table>
+</body>
+<script  th:inline="none">
+    $("#qxid").click(function () {
+        alert("22");
+    });
+
+  function exportWord() {
+    //  var arr=$(".chk");
+      var arr=$("[class=chk]:checked");
+      if (arr.length!=1){
+          layer.msg("请选择一条数据导出");
+      }else{
+          location.href="poi/exportWord?id="+arr[0].value;
+      }
+
+  }
+    
+    function exportExcel(){
+        var ids="";
+        var arr=$(".chk");
+        for (var i=0;i<arr.length;i++){
+            if (arr[i].checked==true){
+                ids+=","+arr[i].value;
+            }
+        }
+        ids=ids.substr(1);
+        if (ids==""){
+            layer.msg("请选择导出数据");
+        } else{
+            location.href="poi/exportXlsx?ids="+ids;
+        }
+    }
+
+    $(function () {
+        init();
+    })
+
+    function init() {
+        layui.use('table', function() {
+            var table = layui.table;
+            table.render({
+                elem: '#test',
+                dataType: 'json'
+                , url: '/poi/findstu'
+                ,toolbar: 'default'
+                , cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                , cols: [[
+                    {field: 'sid', title: '<input type="checkbox"  id="qxid" >ID',templet:function (row) {
+                            return '<input type="checkbox" value="'+row.sid+'" class="chk">';
+                        }}
+                    , {field: 'sname', title: '姓名'}
+                    , {field: 'sage', title: '年龄', sort: true}
+                    , {field: 'birthDay',  title: '出生日期', sort: true}
+                    , {field: 'sphoto', title: '图片'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                    , {field: 'area', title: '地区'}
+                    , {field: 'sex',  title: '性别' ,templet: function(row){
+                        if (row.sex==1){
+                            return "男";
+                        }
+                            if (row.sex==2){
+                                return "女";
+                            }
+                        }}
+                    , {field: 'nation', title: '民族'}
+                    , {field: 'phone',  title: '电话'}
+                    ,{field:'email',  title: '邮箱'}
+                    ,{field:'info', title: '简介',templet: function(row){
+                        return row.info.substring(0,10)+"......";
+                        }}
+                ]],
+                id: 'testReload',
+                skin: 'row', //表格风格
+                even: true, //隔行背景
+                page: true, //是否显示分页
+                limits: [2, 5, 10], //显示
+                limit: 2, //每页默认显示的数量
+                request: {
+                    page: 'pageNo', //页码的参数名称，默认：page
+                    limit: 'pageSize' //每页数据量的参数名，默认：limit
+                }
+
+            });
+
+            var $ = layui.$, active = {
+                reload: function () {
+                    //执行重载
+                    table.reload('testReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            birthDay:$("#startPlaceDate").val(),
+                            endDate:$("#endPlaceDate").val(),
+                            sname:$("#sname").val()
+                        }
+                    });
+                }
+
+            };
+            $('#anniu').on('click', function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+    }
+
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+
+        //常规用法
+        laydate.render({
+            elem: '#startPlaceDate'
+        });
+        laydate.render({
+            elem: '#endPlaceDate'
+        });
+    });
+    var form='';//定义全局变量
+    layui.use(['form','laydate'],function(){
+        form  = layui.form,
+            laydate = layui.layuidate;
+        form.render();//更新渲染表单
+    });
+</script>
+</html>

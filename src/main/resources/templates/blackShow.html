@@ -22,9 +22,26 @@
     <script src="/js/layer/layer.js"></script>
 </head>
 <body>
+<input type="button" class="btn btn-success" value="导出Excel" onclick="exportExcel()">
 <table id="blackTable"></table>
 </body>
 <script>
+    function exportExcel(){
+         var ids="";
+         var arr=$(".chk");
+        for (var i=0;i<arr.length;i++){
+            if (arr[i].checked==true){
+                ids+=","+arr[i].value;
+            }
+        }
+        ids=ids.substr(1);
+        if (ids==""){
+            layer.msg("请选择导出数据");
+        } else{
+            location.href="/ExportExcel?ids="+ids;
+        }
+    }
+
     $(function() {
         initRoleJob();//初始化用户表格数据
 
@@ -49,7 +66,9 @@
             contentType:'application/x-www-form-urlencoded;charset=UTF-8',   //数据编码纯文本  offset=0&limit=5
             toolbar:'#tabToolBar',   //  工具定义位置
             columns:[
-                {field:'id',title:"Id",width:100},
+                {field:'id',title:"Id",width:100,formatter:function (value,row,index) {
+                        return '<input type="checkbox" value="'+value+'" class="chk">'
+                    }},
                 {field:'phone',title:'手机号码',width:100},      //  列    field   代表是 后台  传过来的值
                 {field:'blacktime',title:'时间',width:100},
                 {field:'xx',title:'操作',width:100,formatter:function(value,row,index){
@@ -81,7 +100,7 @@
             pagination: true,                   //是否显示分页（*）
             pageNum: 1,                       //每页的记录行数（*）
             pageSize: 3,                       //每页的记录行数（*）
-            pageList: [3, 6, 9,12],        //可供选择的每页的行数（*）
+            pageList: [3,6,9,12],        //可供选择的每页的行数（*）
         });
 
     }

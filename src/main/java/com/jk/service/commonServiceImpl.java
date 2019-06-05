@@ -1,10 +1,10 @@
 package com.jk.service;
 
-import com.jk.dao.LvMapper;
 import com.jk.dao.commonMapper;
+import com.jk.model.Tixian;
 import com.jk.model.common;
-import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -50,4 +50,29 @@ public class commonServiceImpl implements commonService {
     public HashMap<String, Object> finddetailsdialog(String id) {
         return commonMapper.finddetailsdialog(id);
     }
+
+    @Override
+    public String getSumByid(Integer id) {
+        return commonMapper.getSumByid(id);
+    }
+
+    @Async("taskExecutor")
+    @Override
+    public void updatesum(Tixian ti) {
+        commonMapper.updatesum(ti.getTxmoney()*1.001,ti.getCommid());
+    }
+
+    @Async("taskExecutor")
+    @Override
+    public void addcaiwu(Tixian ti) {
+        commonMapper.addcaiwu(ti);
+    }
+
+    @Async("taskExecutor")
+    @Override
+    public void addtixianjilu(Tixian ti) {
+        commonMapper.addtixianjilu(ti);
+    }
+
+
 }

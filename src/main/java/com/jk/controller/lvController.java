@@ -3,21 +3,34 @@ package com.jk.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jk.model.BiaoTi;
+import com.jk.model.Black;
 import com.jk.model.Ossbean;
 import com.jk.model.User;
 import com.jk.rmi.ThisClient;
 import com.jk.service.LvService;
 import com.jk.utils.Constant;
+import com.jk.utils.FileUtil;
 import com.jk.utils.MenuTree;
 import com.jk.utils.TreeNoteUtil;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +44,38 @@ public class lvController {
 
     @Autowired
     private ThisClient thisClient;
+
+    @RequestMapping("ExportExcel")
+    @ResponseBody
+    public ResponseEntity<byte[]> ExportExcel(String ids)throws IOException {
+       List<Black> list= lvService.findBlackListByid(ids);
+        String[] title={"ID","手机号","时间"};
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet sheet = workbook.createSheet();
+        HSSFRow row = sheet.createRow(0);
+        HSSFCell cell = null;
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd");
+        for (int i=0;i<title.length;i++){
+            cell = row.createCell(i);
+            cell.setCellValue(title[i]);
+        }
+        for (int i=0; i<list.size();i++){
+            HSSFRow row1 = sheet.createRow(i+1);
+            HSSFCell cell1 = row1.createCell(0);
+            cell1.setCellValue(list.get(i).getId());
+            HSSFCell cell2 = row1.createCell(1);
+            cell2.setCellValue(list.get(i).getPhone());
+            HSSFCell cell3 = row1.createCell(2);
+            cell3.setCellValue(sim.format(list.get(i).getBlacktime()));
+        }
+
+        String pathname = "C:\\Users\\Public\\Desktop\\1.xlsx";
+        File file = new File(pathname);
+        file.createNewFile();
+        FileOutputStream fileOutputStream = FileUtils.openOutputStream(file);
+        workbook.write(fileOutputStream);
+        return FileUtil.FileDownload(pathname);
+    }
 
     //邮箱登录
     @RequestMapping("emailLogin")
@@ -115,6 +160,18 @@ public class lvController {
       }
     }
 
+    @RequestMapping("addPoster")
+    @ResponseBody
+    public void addPoster(Ossbean ossbean){
+        lvService.addPoster(ossbean);
+    }
+
+    @RequestMapping("updatePosterStatus")
+    @ResponseBody
+    public void updatePosterStatus(String id,Integer type){
+        lvService.updatePosterStatus(id,type);
+    }
+
     //跳转修改路径页面
     @RequestMapping("toupdateHref")
     public String  toupdateHref(String href,Integer id,Model model){
@@ -146,7 +203,7 @@ public class lvController {
     @RequestMapping("findTree")
     @ResponseBody
     public String getTreeAll(){
-
+        System.out.println("-------------------");
         return lvService.getTreeAll();
     }
     /**
@@ -244,5 +301,11 @@ public class lvController {
     @ResponseBody
     public String getSession(String ssionKey,HttpSession session){
       return   session.getAttribute(ssionKey).toString();
+    }
+
+    @RequestMapping("getPoster")
+    @ResponseBody
+    public HashMap<String,Object> getPoster(Integer start,Integer pageSize){
+        return lvService.getPoster(start,pageSize);
     }
 }

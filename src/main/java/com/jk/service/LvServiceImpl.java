@@ -2,9 +2,7 @@ package com.jk.service;
 
 import com.alibaba.fastjson.JSON;
 import com.jk.dao.LvMapper;
-import com.jk.model.BiaoTi;
-import com.jk.model.Ossbean;
-import com.jk.model.User;
+import com.jk.model.*;
 import com.jk.utils.MenuTree;
 import com.jk.utils.TreeNoteUtil;
 import org.apache.commons.lang.StringUtils;
@@ -88,6 +86,49 @@ public class LvServiceImpl implements LvService{
         return map;
     }
 
+    @Override
+    public HashMap<String, Object> getPoster(Integer start, Integer pageSize) {
+        Integer total= lvMapper.getPosterTableTotal();
+        List<Ossbean> list =lvMapper.getPoster(start,pageSize);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("total",total);
+        map.put("rows", list);
+        return map;
+    }
+
+    @Override
+    public void addPoster(Ossbean ossbean) {
+        lvMapper.addPoster(ossbean);
+    }
+
+    @Override
+    public void updatePosterStatus(String id,Integer type) {
+        lvMapper.updatePosterStatus(id);
+        lvMapper.updateOrtherPoster(id,type);
+    }
+
+    @Override
+    public List<Black> findBlackListByid(String ids) {
+
+        return  lvMapper.findBlackListByid(ids);
+    }
+
+    @Override
+    public HashMap<String, Object> findstu(Integer page, Integer limit, Student stu) {
+        Integer total=lvMapper.findStuCount();
+        List<Student> list=lvMapper.findstu((page-1)*limit,limit,stu);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("count",total);
+        hashMap.put("data",list);
+        hashMap.put("code",0);
+        return hashMap;
+    }
+
+    @Override
+    public List<LinkedHashMap<String,Object>> findstuByid(String ids) {
+        return lvMapper.findstuByid(ids);
+    }
+
     //修改路径
     @Override
     public void upHref(Ossbean ossbean) {
@@ -129,6 +170,8 @@ public class LvServiceImpl implements LvService{
         return hashMap;
     }
 
+
+
     //jgy查询标题表
     @Override
     public HashMap<String, Object> finBiaoti(Integer pageSize, Integer start) {
@@ -160,14 +203,20 @@ public class LvServiceImpl implements LvService{
     @Override
     public void deleteBiaoti(String btid,Integer type) {
         Jedis resource = jedisPool.getResource();
-        resource.del("biaoti");
-        resource.close();
+
+
      if (type==1){
+         resource.del("biaoti");
          lvMapper.deleteBiaoti(btid);
      }
        if (type==2){
+           resource.del("luobo");
            lvMapper.deleteLunbo(btid);
        }
+        if (type==3){
+            lvMapper.deletePoster(btid);
+        }
+        resource.close();
     }
 
     //根据ID查询标题

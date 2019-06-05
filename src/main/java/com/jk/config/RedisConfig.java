@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.ShardedJedisPool;
 
 @Configuration
 @PropertySource(value = { "classpath:application.properties" })
@@ -29,7 +30,7 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     private int port;
 
-    /*@Value("${spring.redis.pwd}")
+  /*  @Value("${spring.redis.pwd}")
     private String pwd;*/
 
     @Value("${spring.redis.timeout}")

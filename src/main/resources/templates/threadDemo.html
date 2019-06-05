@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test</title>
+</head>
+<script type="text/javascript" src="/js3/jquery-1.9.1.min.js"></script>
+<!-- 引入bootstrap的css、js文件 -->
+<link rel="stylesheet" href="/bootstrap3/css/bootstrap.css">
+<script type="text/javascript" src="/bootstrap3/js/bootstrap.js"></script>
+<!-- 引入table的css、js -->
+<link rel="stylesheet" href="/js/bootstrap-table/bootstrap-table.css">
+<script type="text/javascript" src="/js/bootstrap-table/bootstrap-table.js"></script>
+<script type="text/javascript" src="/js/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+<script src="/js/bootstrap-bootbox/bootbox.js"></script>
+<!-- 引入date日期的css、js -->
+<link rel="stylesheet" href="/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css">
+<script type="text/javascript" src="/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+
+<!--  引入layer-->
+<script src="/js/layer/layer.js"></script>
+<body>
+<form id="comformid">
+<input type="hidden" id="comid" value="1" name="commid">
+<h1>总金额:<span id="sumid"></span></h1>
+       &nbsp;&nbsp;&nbsp;&nbsp; 费率:<input type="text" disabled value="0.001"><br>
+    <div class="col-md-4">
+提现金额:<input type="text" class="form-control"  name="txmoney" id="aaa" placeholder="提现金额">
+    </div>
+    <br><br> <br>
+    &nbsp;&nbsp;<button type="button" class="btn btn-success" id="btid">提现</button>
+</form>
+</body>
+<script>
+
+    $("#btid").click(function () {
+        $.ajax({
+            url:"tixian",
+            type:"post",
+            data:$("#comformid").serialize(),
+            success:function (data) {
+                layer.msg('提现成功', {
+                    time: 2000, //2s后自动关闭
+                });
+                $("#aaa").val("");
+                getSumByid();
+               // location.reload();
+            },error:function () {
+                
+            }
+        });
+    });
+
+   function getSumByid(){
+       $.ajax({
+           url:"getSumByid",
+           type:"post",
+           data:{"id":$("#comid").val()},
+           success:function (data) {
+               $("#sumid").html(data);
+           },error:function () {
+               
+           }
+       });
+   }
+
+    $(function () {
+        getSumByid();
+    });
+
+</script>
+</html>

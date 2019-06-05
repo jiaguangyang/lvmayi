@@ -34,4 +34,24 @@
         insert into t_oss(url,href,hrefname) values(#{url},#{href},#{hrefname})
     </insert>
 
+    <insert id="addPoster">
+        insert into t_poster(url,href,hrefname,status,type) values(#{url},#{href},#{hrefname},0,#{type})
+    </insert>
+
+    <select id="findstu" resultType="com.jk.model.Student">
+        select *,getpy(sname),UPPER(to_pinyin(sname)) from student where 1=1
+        <if test="stu.birthDay!=null">
+            and birthDay &gt;=#{stu.birthDay}
+        </if>
+        <if test="stu.birthDay!=null">
+            and birthDay &lt;=#{stu.endDate}
+        </if>
+        <if test="stu.sname!=null and stu.sname!=''">
+            and sname like concat(concat('%',#{stu.sname}),'%')
+            or getpy(sname) like concat(concat('%',#{stu.sname}),'%')
+            or UPPER(to_pinyin(sname)) like concat(concat('%',#{stu.sname}),'%')
+        </if>
+        limit #{start},#{limit}
+    </select>
+
 </mapper>

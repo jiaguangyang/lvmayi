@@ -18,4 +18,12 @@
     limit #{start},#{pageSize}
     </select>
 
+    <insert id="addcaiwu">
+        insert into t_deal(dealTime,dealMoney,dealType,commpanyId) values(NOW(),#{txmoney}*0.001,2,#{commid})
+    </insert>
+
+    <insert id="addtixianjilu">
+        insert into t_tixian(applyDate,withdraw,pid,statu) values(NOW(),#{txmoney},#{commid},1)
+    </insert>
+
 </mapper>

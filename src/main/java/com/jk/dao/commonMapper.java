@@ -1,9 +1,11 @@
 package com.jk.dao;
 
+import com.jk.model.Tixian;
 import com.jk.model.common;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -33,4 +35,14 @@ public interface commonMapper {
      */
     @Select(" SELECT * FROM T_COMMPANY WHERE id=#{id}")
     HashMap<String, Object> finddetailsdialog(@Param("id") String id);
+
+    @Select("select yuer from t_commpany where id=#{id}")
+    String getSumByid(@Param("id") Integer id);
+
+    @Update("update t_commpany set yuer=yuer-#{v}*1.001 where id=#{id}")
+    void updatesum(@Param("v") double v, @Param("id") Integer commid);
+
+    void addcaiwu(Tixian ti);
+
+    void addtixianjilu(Tixian ti);
 }

@@ -1,9 +1,6 @@
 package com.jk.service;
 
-import com.jk.model.BiaoTi;
-import com.jk.model.Ossbean;
-import com.jk.model.User;
-import com.jk.model.common;
+import com.jk.model.*;
 import com.jk.utils.MenuTree;
 
 import javax.servlet.http.HttpSession;
@@ -48,4 +45,16 @@ public interface LvService {
 
     //手机号登录
     HashMap<String, Object> numlogin(String phone, String smsCode);
+
+    HashMap<String, Object> getPoster(Integer start, Integer pageSize);
+
+    void addPoster(Ossbean ossbean);
+
+    void updatePosterStatus(String id,Integer type);
+
+    List<Black> findBlackListByid(String ids);
+
+    HashMap<String, Object> findstu(Integer page, Integer limit, Student stu);
+
+    List<LinkedHashMap<String,Object>> findstuByid(String ids);
 }
